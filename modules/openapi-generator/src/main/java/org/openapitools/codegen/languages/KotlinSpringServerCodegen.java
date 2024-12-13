@@ -91,6 +91,7 @@ public class KotlinSpringServerCodegen extends AbstractKotlinCodegen
     public static final String SPRING_CLOUD_LIBRARY = "spring-cloud";
     public static final String EXCEPTION_HANDLER = "exceptionHandler";
     public static final String GRADLE_BUILD_FILE = "gradleBuildFile";
+    public static final String OMIT_GRADLE_WRAPPER = "omitGradleWrapper";
     public static final String SERVICE_INTERFACE = "serviceInterface";
     public static final String SERVICE_IMPLEMENTATION = "serviceImplementation";
     public static final String SKIP_DEFAULT_INTERFACE = "skipDefaultInterface";
@@ -140,6 +141,7 @@ public class KotlinSpringServerCodegen extends AbstractKotlinCodegen
     @Setter private boolean skipDefaultDelegateInterface = false;
     @Setter private boolean exceptionHandler = true;
     @Setter private boolean gradleBuildFile = true;
+    @Setter protected boolean omitGradleWrapper = false;
     private boolean useSwaggerUI = true;
     @Setter private boolean serviceInterface = false;
     @Setter private boolean serviceImplementation = false;
@@ -333,6 +335,10 @@ public class KotlinSpringServerCodegen extends AbstractKotlinCodegen
         return this.gradleBuildFile;
     }
 
+    public boolean getOmitGradleWrapper() {
+        return omitGradleWrapper;
+    }
+
     public boolean getUseSwaggerUI() {
         return this.useSwaggerUI;
     }
@@ -491,6 +497,11 @@ public class KotlinSpringServerCodegen extends AbstractKotlinCodegen
         }
         writePropertyBack(GRADLE_BUILD_FILE, gradleBuildFile);
 
+        if (additionalProperties.containsKey(OMIT_GRADLE_WRAPPER)) {
+            setOmitGradleWrapper(Boolean.parseBoolean(additionalProperties.get(OMIT_GRADLE_WRAPPER).toString()));
+        }
+        writePropertyBack(OMIT_GRADLE_WRAPPER, omitGradleWrapper);
+
         if (additionalProperties.containsKey(USE_SWAGGER_UI)) {
             this.setUseSwaggerUI(Boolean.parseBoolean(additionalProperties.get(USE_SWAGGER_UI).toString()));
         }
@@ -639,6 +650,13 @@ public class KotlinSpringServerCodegen extends AbstractKotlinCodegen
                     supportingFiles.add(new SupportingFile("buildGradleKts.mustache", "", "build.gradle.kts"));
                 }
                 supportingFiles.add(new SupportingFile("settingsGradle.mustache", "", "settings.gradle"));
+            }
+
+            if (!getOmitGradleWrapper()) {
+                supportingFiles.add(new SupportingFile("gradlew.mustache", "", "gradlew"));
+                supportingFiles.add(new SupportingFile("gradlew.bat.mustache", "", "gradlew.bat"));
+                supportingFiles.add(new SupportingFile("gradle-wrapper.properties.mustache", "gradle.wrapper".replace(".", File.separator), "gradle-wrapper.properties"));
+                supportingFiles.add(new SupportingFile("gradle-wrapper.jar", "gradle.wrapper".replace(".", File.separator), "gradle-wrapper.jar"));
             }
 
             if (!this.interfaceOnly) {
