@@ -16,6 +16,11 @@ repositories {
     mavenCentral()
 }
 
+tasks.wrapper {
+    gradleVersion = "8,7"
+    distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }

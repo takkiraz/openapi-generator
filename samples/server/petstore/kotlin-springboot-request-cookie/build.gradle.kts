@@ -9,6 +9,11 @@ repositories {
     maven { url = uri("https://repo.spring.io/milestone") }
 }
 
+tasks.wrapper {
+    gradleVersion = "8,7"
+    distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "17"
 }
